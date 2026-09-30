@@ -23,15 +23,15 @@ struct CorredorProcesado{
     int difAnterior;
 };
 
-int convertirASegundos(char llegada[]);
+int convertirASegundos(const char llegada[]);
 void convertirAStringTiempo(int decSeg, char destino[]);
-void procesarCarrera(char* tituloCarrera, CorredorProcesado lista[], int cant);
+void procesarCarrera(const char* tituloCarrera, CorredorProcesado lista[], int cant);
 
 int main(){
-    char carpetaRuta[]= "C:/Users/emmanuelp148/Documents/Emmanuel Pilco1/UTN/Algortimos y Estructura de datos/Ejercicios practicos/Archivo corredores 4Refugios.bin";
+    char carpetaRuta[]= "C:/Users/emmanuelp148/Documents/Emmanuel Pilco1/UTN/Algortimos y Estructura de datos/Ejercicios practicos/";
     char nombreDelArchivo[]= "Archivo corredores 4Refugios.bin";
-    char ruta[100];
-    strcpy(ruta,carpetaRuta);
+    char ruta[300];
+    strcpy(ruta, carpetaRuta);
     strcat(ruta, nombreDelArchivo);
     FILE *f = fopen(ruta, "rb+");
 
@@ -85,27 +85,27 @@ int main(){
         }
     }
 
-    for(int i=0; i < cantNonstop-1; i++){
-        for(int j= i+1; j < cantNonstop; j++){
-            bool cambiar;
-            if(!nonstop[i].termino && nonstop[i].termino){
-                cambiar= true;
+    for(int i = 0; i < cantNonstop - 1; i++){
+        for(int j = i + 1; j < cantNonstop; j++){
+            bool cambiar = false;
+            if(!nonstop[i].termino && nonstop[j].termino){
+                cambiar = true;
             } else if(nonstop[i].termino && nonstop[j].termino){
-                if(nonstop[j].tiempoSegundos < nonstop[j].tiempoSegundos){
-                    cambiar= true;
+                if(nonstop[j].tiempoSegundos < nonstop[i].tiempoSegundos){
+                    cambiar = true;
                 }
             }
             if(cambiar){
-                CorredorProcesado temp= nonstop[i];
+                CorredorProcesado temp = nonstop[i];
                 nonstop[i] = nonstop[j];
                 nonstop[j] = temp;
             }
         }
     }
 
-    int primerTiempoClasico= -1;
-    int posGralValidaC= 1;
-    for(int i=0; i<cantClasica; i++){
+    int primerTiempoClasico = -1;
+    int posGralValidaC = 1;
+    for(int i = 0; i < cantClasica; i++){
         if(clasica[i].termino){
             clasica[i].posGeneral = posGralValidaC++;
             if(primerTiempoClasico == -1){
@@ -114,12 +114,12 @@ int main(){
             clasica[i].difPrimero = clasica[i].tiempoSegundos - primerTiempoClasico;
 
             if(posGralValidaC == 2){
-                clasica[i].difAnterior= 0;
+                clasica[i].difAnterior = 0;
             } else{
-                int tiempoAnt= 0;
-                for(int k=0; k<i; k++){
-                    if(clasica[k].posGeneral == clasica[i].posGeneral-1){
-                        tiempoAnt= clasica[k].tiempoSegundos;
+                int tiempoAnt = 0;
+                for(int k = 0; k < i; k++){
+                    if(clasica[k].posGeneral == clasica[i].posGeneral - 1){
+                        tiempoAnt = clasica[k].tiempoSegundos;
                     }
                 }
                 clasica[i].difAnterior = clasica[i].tiempoSegundos - tiempoAnt;
@@ -143,9 +143,9 @@ int main(){
         clasica[i].posCat = clasica[i].termino ? pCat : 0;
     }
 
-    int primerTiempoNonStop= -1;
-    int posGralValidaN= 1;
-    for(int i; i<cantNonstop; i++){
+    int primerTiempoNonStop = -1;
+    int posGralValidaN = 1;
+    for(int i = 0; i < cantNonstop; i++){
         if (nonstop[i].termino) {
             nonstop[i].posGeneral = posGralValidaN++;
             if (primerTiempoNonStop == -1) primerTiempoNonStop = nonstop[i].tiempoSegundos;
@@ -166,8 +166,8 @@ int main(){
             nonstop[i].difAnterior = -1;
         }
 
-        int pGen= 1, pCat= 1;
-        for(int k=0; k<i; k++){
+        int pGen = 1, pCat = 1;
+        for(int k = 0; k < i; k++){
             if(nonstop[k].termino && nonstop[k].datos.genero == nonstop[i].datos.genero){
                 pGen++;
             }
@@ -175,12 +175,12 @@ int main(){
                 pCat++;
             }
         }
-        nonstop[i].posGenero= nonstop[i].termino ? pGen : 0;
-        nonstop[i].posCat= nonstop[i].termino ? pCat : 0;
+        nonstop[i].posGenero = nonstop[i].termino ? pGen : 0;
+        nonstop[i].posCat = nonstop[i].termino ? pCat : 0;
     }
+
     procesarCarrera("4 Refugios Clasica", clasica, cantClasica);
     procesarCarrera("4 Refugios NonStop", nonstop, cantNonstop);
-
 
     FILE *fClasica = fopen("clasica_procesada.bin", "wb");
     for(int i = 0; i < cantClasica; i++) {
@@ -201,7 +201,7 @@ int main(){
 }
 
 int convertirASegundos(const char llegada[]){
-    if(strcmp(llegada, "No termino")==0 || strcmp(llegada, "DNF") == 0 || strncmp(llegada, "DNF", 3) == 0 || strncmp(llegada, "DSQ", 3) == 0){
+    if(strcmp(llegada, "No termino") == 0 || strcmp(llegada, "No Termino") == 0 || strcmp(llegada, "DNF") == 0 || strncmp(llegada, "DNF", 3) == 0 || strncmp(llegada, "DSQ", 3) == 0){
         return -1;
     }
     int h = (llegada[0] - '0') * 10 + (llegada[1] - '0');
